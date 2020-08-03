@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <script src="./dist/umd/vue.js"></script>
+</head>
+<body>
+<script>
+  var vm = new Vue({
+    el: '#app',
+    data() {
+      return {
+        a: {
+          b: {
+            c: {
+              d: 1
+            }
+          }
+        }
+      }
+    },
+    template: '',
+    watch: {
+
+    },
+    computed: {
+
+    }
+  })
+  console.log(vm._data)
+</script>
+</body>
+</html>
