@@ -39,7 +39,7 @@ function defineReactive(data, key, value) {
       value = newValue
     },
     get() {
-      console.log('获取', value)
+      console.log('获取1111', value)
       return value
     }
   })
