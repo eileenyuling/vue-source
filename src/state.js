@@ -18,11 +18,24 @@ export function initState(vm) {
     initWatch(vm)
   }
 }
+function proxy(vm, data, key) {
+  Object.defineProperty(vm, key, {
+    get() {
+      return vm[data][key]
+    },
+    set(newValue) {
+      vm[data][key] = newValue
+    }
+  })
+}
 function initProps(){}
 function initMethods(){}
 function initData(vm){
   let data = vm.$options.data
   vm._data = data = typeof data === 'function' ? data.call(vm) : data
+  for (let key in data) {
+    proxy(vm, '_data', key)
+  }
   observe(data)
 }
 function initComputed(){}

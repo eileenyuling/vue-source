@@ -42,9 +42,58 @@
     return Constructor;
   }
 
+  var oldArrayProtoMethods = Array.prototype;
+  var arrayMetods = Object.create(oldArrayProtoMethods);
+  var methods = ['push', 'pop', 'shift', 'unshift', 'reverse', 'sort', 'splice'];
+  methods.forEach(function (method) {
+    arrayMetods[method] = function () {
+      for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      var result = oldArrayProtoMethods[method].apply(this, args);
+      var inserted;
+      var ob = this.__ob__;
+
+      switch (key) {
+        case 'push':
+        case 'unshift':
+          inserted = args;
+          break;
+
+        case 'splice':
+          // vue.$set原理， 后面讲
+          inserted = args.slice(2);
+          break;
+      }
+
+      if (inserted) {
+        ob.observeArray(inserted);
+      }
+
+      return result;
+    };
+  });
+
   var Observer = /*#__PURE__*/function () {
     function Observer(value) {
       _classCallCheck(this, Observer);
+
+      // 判断一个数据是否被观测过
+      Object.defineProperty(value, '__ob__', {
+        enumerable: false,
+        // 不能被枚举
+        configurable: false,
+        value: this
+      }); // value.__ob__ = this 不能这样写，因为会不断调用defineReactive， 陷入死循环
+      // 为了性能考虑，对数组的监听进行改写
+
+      if (Array.isArray(value)) {
+        // 函数劫持、切片编程
+        value.__proto__ = arrayMetods;
+        this.observeArray(value);
+        return;
+      }
 
       this.walk(value);
     }
@@ -55,6 +104,13 @@
         var keys = Object.keys(data);
         keys.forEach(function (key) {
           defineReactive(data, key, data[key]);
+        });
+      }
+    }, {
+      key: "observeArray",
+      value: function observeArray(value) {
+        value.forEach(function (item) {
+          observe(item);
         });
       }
     }]);
@@ -71,7 +127,7 @@
         value = newValue;
       },
       get: function get() {
-        console.log('获取');
+        console.log('获取', value);
         return value;
       }
     });
@@ -79,6 +135,10 @@
 
   function observe(data) {
     if (_typeof(data) !== 'object' || data === null) {
+      return;
+    }
+
+    if (data.__ob__) {
       return;
     }
 
@@ -101,9 +161,25 @@
     if (opts.watch) ;
   }
 
+  function proxy(vm, data, key) {
+    Object.defineProperty(vm, key, {
+      get: function get() {
+        return vm[data][key];
+      },
+      set: function set(newValue) {
+        vm[data][key] = newValue;
+      }
+    });
+  }
+
   function initData(vm) {
     var data = vm.$options.data;
     vm._data = data = typeof data === 'function' ? data.call(vm) : data;
+
+    for (var key in data) {
+      proxy(vm, '_data', key);
+    }
+
     observe(data);
   }
 
