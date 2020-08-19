@@ -6,12 +6,20 @@
   <script src="./dist/umd/vue.js"></script>
 </head>
 <body>
+  <div id="app">
+    hello {{ name }} {{age}} msg
+    <ul>
+      <li>1111</li>
+      <li>2222</li>
+      <li>3333</li>
+    </ul>
+  </div>
 <script>
   var vm = new Vue({
     el: '#app',
     data() {
       return {
-        a: [{a: 1}, {a: 2}, {a: 3}]
+        name: 'eileen'
       }
     },
     template: '',
@@ -22,8 +30,7 @@
 
     }
   })
-  vm._data.a[0].a = 4
-  console.log(vm.a)
+
 </script>
 </body>
 </html>
