@@ -15,6 +15,7 @@ export function initMixin(Vue){
     const vm = this
     const options = vm.$options
     el = document.querySelector(el)
+    vm.$el = el
     if (!options.render) {
       let template = options.template
       if (!template && el) {
