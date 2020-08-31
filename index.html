@@ -15,12 +15,30 @@
     </ul>
   </div>
 <script>
+    Vue.mixin({
+    created() {
+      console.log('3333')
+    }
+  })
+  Vue.mixin({
+    created:[
+    () => {
+      console.log('1111')
+    },
+    () => {
+      console.log('1111')
+    }
+    ]
+  })
   var vm = new Vue({
     el: '#app',
     data() {
       return {
         name: 'eileen'
       }
+    },
+    created() {
+      console.log('2222')
     },
     template: '',
     watch: {
@@ -30,7 +48,6 @@
 
     }
   })
-
 </script>
 </body>
 </html>
