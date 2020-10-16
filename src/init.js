@@ -3,9 +3,11 @@ import { compileToFunctions } from "./compiler/index"
 import { mountComponent, callHook } from "./lifecycle"
 import { mergeOptions } from "./utils"
 
+// 全局组件 和 局部组件 的区别？？？？？？
 export function initMixin(Vue){
   Vue.prototype._init = function(options) {
     const vm = this
+    // vm.$options = options
     vm.$options = mergeOptions(vm.constructor.options, options)
     callHook(vm, 'beforeCreate')
     initState(vm)

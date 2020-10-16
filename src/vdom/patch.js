@@ -4,6 +4,7 @@ export function patch(oldVnode, vnode) {
   let parentElm = oldVnode.parentNode
   parentElm.insertBefore(el, oldVnode.nextSibling)
   parentElm.removeChild(oldVnode)
+  return el
 }
 
 function createEl(vnode) {

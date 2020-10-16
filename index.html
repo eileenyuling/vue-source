@@ -7,7 +7,7 @@
 </head>
 <body>
   <div id="app" style="color: red; text-align: right;">
-    hello {{ name }}
+    hello {{ arr }}
     <ul>
       <li>1111</li>
       <li>2222</li>
@@ -34,7 +34,8 @@
     el: '#app',
     data() {
       return {
-        name: 'eileen'
+        name: 'eileen',
+        arr: [{a: 1}, 1]
       }
     },
     created() {
@@ -48,6 +49,10 @@
 
     }
   })
+  setTimeout(() => {
+    vm.arr.push(2)
+  }, 2000)
+
 </script>
 </body>
 </html>

@@ -14,7 +14,7 @@ methods.forEach(method => {
     const result = oldArrayProtoMethods[method].apply(this, args)
     let inserted
     const ob = this.__ob__
-    switch(key) {
+    switch(method) {
       case 'push':
       case 'unshift':
         inserted = args
@@ -28,6 +28,7 @@ methods.forEach(method => {
     if (inserted) {
       ob.observeArray(inserted)
     }
+    ob.dep.notify()
     return result
   }
 })

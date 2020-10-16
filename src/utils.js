@@ -9,8 +9,8 @@ export const LIFECYCLE_HOOKS = [
   'destroyed'
 ]
 const strats = {}
-strats.data = function() {
-
+strats.data = function(parentValue, childValue) {
+  return childValue // 此处应有合并策略
 }
 strats.computed = function() {
 

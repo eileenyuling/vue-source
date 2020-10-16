@@ -1,7 +1,9 @@
 import { arrayMetods } from "./array"
+import Dep from './dep'
 
 class Observer {
   constructor(value) {
+    this.dep = new Dep() // 给整个对象增加dep
     // 判断一个数据是否被观测过
     Object.defineProperty(value, '__ob__', {
       enumerable: false, // 不能被枚举
@@ -31,15 +33,25 @@ class Observer {
   }
 }
 function defineReactive(data, key, value) {
-  observe(value)
+  // 获取到数组对应的dep
+  let childDep = observe(value) // 如果数组或者对象被直接访问， 那么得到的就是Observer的实例
+  let dep = new Dep()
   Object.defineProperty(data, key, {
+    get() {
+      if (Dep.target) { // 说明正在渲染页面
+        dep.depend()
+        if (childDep) {
+          childDep.dep.depend()
+        }
+      }
+      return value
+    },
     set(newValue) {
       if (newValue === value) return
       observe(newValue)
       value = newValue
-    },
-    get() {
-      return value
+
+      dep.notify() // 异步操作，防止频繁操作
     }
   })
 }

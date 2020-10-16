@@ -35,7 +35,7 @@ function gen(node) {
     }
     let tokens = []
     let lastIndex = defaultTagRE.lastIndex = 0
-    let match, index
+    let match, index = 0
     while(match = defaultTagRE.exec(text)) {
       index = match.index
       if (index > lastIndex) {
@@ -43,7 +43,7 @@ function gen(node) {
       }
       tokens.push(`_s(${match[1].trim()})`)
       lastIndex = index + match[0].length
-      // text = text.slice(lastIndex)
+      text = text.slice(lastIndex)
     }
     if (lastIndex < text.length) {
       tokens.push(JSON.stringify(text.slice(lastIndex)))
