@@ -15,18 +15,18 @@
     </ul>
   </div>
 <script>
-    Vue.mixin({
+  Vue.mixin({
     created() {
-      console.log('3333')
+      console.log('mixin1')
     }
   })
   Vue.mixin({
     created:[
     () => {
-      console.log('1111')
+      console.log('mixin21')
     },
     () => {
-      console.log('1111')
+      console.log('mixin22')
     }
     ]
   })
@@ -39,7 +39,7 @@
       }
     },
     created() {
-      console.log('2222')
+      console.log('mixin3')
     },
     template: '',
     watch: {
@@ -51,7 +51,15 @@
   })
   setTimeout(() => {
     vm.arr.push(2)
+    vm.$nextTick(() => {
+      console.log('11111')
+    })
   }, 2000)
+  setTimeout(() => {
+    vm.$nextTick(() => {
+      console.log('22222')
+    })
+  }, 3000)
 
 </script>
 </body>

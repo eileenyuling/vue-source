@@ -49,3 +49,49 @@ export function mergeOptions(parent, child) {
   }
   return options
 }
+
+let pending = false
+const callbacks = []
+function flushCallbacks() {
+  while (callbacks.length) {
+    let cb = callbacks.pop()
+    cb()
+  }
+  pending = false
+}
+let timerFunc
+// if (Promise) {
+//   timerFunc = () => {
+//     Promise.resolve().then(flushCallbacks)
+//   }
+// } else
+if (MutationObserver) {
+  console.log('MutationObserver')
+  let observe = new MutationObserver(flushCallbacks)
+  let textNode = document.createTextNode(1)
+  console.log(textNode.textContent)
+  observe.observe(textNode, {characterData: true})
+  timerFunc = () => {
+    console.log(textNode.textContent)
+    setTimeout(() => {
+      textNode.textContent = 2
+    }, 2000);
+
+  }
+} else if (setImmediate) {
+  timerFunc = () => {
+    setImmediate(flushCallbacks)
+  }
+} else {
+  timerFunc = () => {
+    setTimeout(flushCallbacks, 0);
+  }
+}
+export function nextTick(cb) {
+  callbacks.push(cb)
+  // vue3 nextTick就是 promise.then， 没有做兼容性处理
+  if (!pending) {
+    timerFunc()
+    pending = true
+  }
+}

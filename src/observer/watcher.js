@@ -1,5 +1,5 @@
 import { popTarget, pushTarget } from "./dep"
-
+import { nextTick } from '../utils'
 let id = 0
 class Watcher {
   constructor(vm, exprOrFn, cb, options) {
@@ -28,8 +28,41 @@ class Watcher {
     this.getter()
     popTarget()
   }
-  update() {
+  run() {
     this.get()
+  }
+  update() {
+    // 批量更新
+    queueWatcher(this)
+    // this.get()
+  }
+}
+let queue = []
+let has = {}
+let pending = false
+
+function flushSchedulerQueue() {
+  queue.forEach(watcher => {
+    watcher.run()
+    watcher.cb()
+  })
+  queue = []
+  has = {}
+  pending = false
+}
+function queueWatcher(watcher) {
+  const id = watcher.id
+  if (!has[id]) {
+    queue.push(watcher)
+    has[id] = true
+  }
+  if (!pending) {
+    // nextTick()
+    nextTick(flushSchedulerQueue)
+    // setTimeout(() => {
+
+    // }, 0)
+    pending = true
   }
 }
 export default Watcher
