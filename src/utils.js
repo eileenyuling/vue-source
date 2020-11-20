@@ -15,8 +15,8 @@ strats.data = function(parentValue, childValue) {
 strats.computed = function() {
 
 }
-strats.watch = function() {
-
+strats.watch = function(parentValue, childValuevalue) {
+  return childValuevalue
 }
 LIFECYCLE_HOOKS.forEach(hook => {
   strats[hook] = mergeHook
@@ -60,19 +60,16 @@ function flushCallbacks() {
   pending = false
 }
 let timerFunc
-// if (Promise) {
-//   timerFunc = () => {
-//     Promise.resolve().then(flushCallbacks)
-//   }
-// } else
+if (Promise) {
+  timerFunc = () => {
+    Promise.resolve().then(flushCallbacks)
+  }
+} else
 if (MutationObserver) {
-  console.log('MutationObserver')
   let observe = new MutationObserver(flushCallbacks)
   let textNode = document.createTextNode(1)
-  console.log(textNode.textContent)
   observe.observe(textNode, {characterData: true})
   timerFunc = () => {
-    console.log(textNode.textContent)
     setTimeout(() => {
       textNode.textContent = 2
     }, 2000);

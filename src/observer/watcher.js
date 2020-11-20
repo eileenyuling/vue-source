@@ -10,10 +10,20 @@ class Watcher {
     this.id = id
     this.deps = [] // watcher记录dep
     this.depsId = new Set()
+    this.user = options.user
     if (typeof exprOrFn === 'function') {
       this.getter = exprOrFn
+    } else {
+      this.getter = () => {
+        let obj = vm
+        let path = exprOrFn.split('.')
+        for (let i = 0; i < path.length; i++) {
+          obj = obj[path[i]]
+        }
+        return obj
+      }
     }
-    this.get()
+    this.value = this.get()
   }
   addDep(dep) {
     let id = dep.id
@@ -25,11 +35,18 @@ class Watcher {
   }
   get() {
     pushTarget(this)
-    this.getter()
+    let result = this.getter()
     popTarget()
+    return result
   }
   run() {
-    this.get()
+    let newValue = this.get()
+    let oldValue = this.value
+    if (this.user) {
+      console.log('run')
+      this.cb.call(this.vm, newValue, oldValue)
+    }
+    this.value = newValue
   }
   update() {
     // 批量更新
@@ -44,7 +61,9 @@ let pending = false
 function flushSchedulerQueue() {
   queue.forEach(watcher => {
     watcher.run()
-    watcher.cb()
+    if (!watcher.user) {
+      watcher.cb()
+    }
   })
   queue = []
   has = {}
